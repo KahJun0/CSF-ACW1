@@ -9,6 +9,8 @@ PNG - Mathan
 
 HTML - Nicole
 
-MP3 & WAV - Kah Jun
+MP3 - Kah Jun
+
+WAV- Mathan & Kah Jun
 
 More to come in soon™
