@@ -5,8 +5,10 @@
 Mathan, Nicole, Alastair, Aaron and Kah Jun
 
 ### Supported file formats:
-PNG (Mathan)
+PNG - Mathan
 
-MP3 & WAV (Kah Jun)
+HTML - Nicole
+
+MP3 & WAV - Kah Jun
 
 More to come in soon™
