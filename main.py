@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, simpledialog
 
 import os
 import pathlib
@@ -8,6 +8,7 @@ import mp3_steg
 import utility
 import wav_steg
 import png_steg
+import stegohtml
 
 
 def select_file(sv: StringVar):
@@ -88,6 +89,17 @@ def begin_encode(cover_file: StringVar, payload_file: StringVar, mode: StringVar
                                            f'Bits used: {bits}\n')
         except Exception as e:
             messagebox.showerror('Error', f'An error has occurred.\n{e}')
+    elif mode == 'HTML':
+        try:
+            secret_msg = simpledialog.askstring(title="Enter message",
+                                                prompt="Enter message to be hidden:")
+            save_as = filedialog.asksaveasfilename(title='Select location and filename to save as',
+                                                   initialdir='/')
+
+            stegohtml.encode(cover_file, save_as, secret_msg)
+            messagebox.showinfo('Success', f'Your message has been encoded into the html file.')
+        except Exception as e:
+            messagebox.showerror('Error', f'An error has occurred.\n{e}')
 
 
 def begin_decode(mode_selected: StringVar, encoded_file: StringVar,
@@ -119,6 +131,12 @@ def begin_decode(mode_selected: StringVar, encoded_file: StringVar,
                                                    initialdir='/')
             status = png_steg.run_decode(encoded_file, bits_used, save_as)
             messagebox.showinfo('Success', f'{status}')
+        except Exception as e:
+            messagebox.showerror('Error', f'An error has occurred.\n{e}')
+    elif mode_selected == 'HTML':
+        try:
+            msg = stegohtml.decode(encoded_file)
+            messagebox.showinfo('Decoded message', f'{msg}')
         except Exception as e:
             messagebox.showerror('Error', f'An error has occurred.\n{e}')
 
@@ -170,8 +188,8 @@ size_of_file_label = Label(decodeTab, text='Size of file:')
 file_extension_label = Label(decodeTab, text='File extension:')
 
 # Dropdowns
-mode_selection_dropdown_encode = OptionMenu(encodeTab, mode_selected_encode_stringvar, 'PNG', 'MP3', 'WAV')
-mode_selection_dropdown_decode = OptionMenu(decodeTab, mode_selected_decode_stringvar, 'PNG', 'MP3', 'WAV')
+mode_selection_dropdown_encode = OptionMenu(encodeTab, mode_selected_encode_stringvar, 'PNG', 'MP3', 'WAV', 'HTML')
+mode_selection_dropdown_decode = OptionMenu(decodeTab, mode_selected_decode_stringvar, 'PNG', 'MP3', 'WAV', 'HTML')
 
 # Encode Buttons
 select_cover_file_button = Button(encodeTab, text='Choose cover file:',
