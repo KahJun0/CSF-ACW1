@@ -1,5 +1,5 @@
 # CSF-ACW1
-## Cyber Security Fundamentals course work 1
+## Cybersecurity Fundamentals course work 1
 
 ### Done by:
 Mathan, Nicole, Alastair, Aaron and Kah Jun
@@ -13,6 +13,6 @@ MP3 - Kah Jun
 
 WAV - Mathan & Kah Jun
 
-DOCX/Plaintext - Aaron
+DOCX/Plaintext - Aaron & Alastair
 
 More to come in soon™
