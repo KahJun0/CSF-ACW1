@@ -9,6 +9,7 @@ import utility
 import wav_steg
 import png_steg
 import stegohtml
+import docx_steg
 
 
 def select_file(sv: StringVar):
@@ -100,20 +101,27 @@ def begin_encode(cover_file: StringVar, payload_file: StringVar, mode: StringVar
             messagebox.showinfo('Success', f'Your message has been encoded into the html file.')
         except Exception as e:
             messagebox.showerror('Error', f'An error has occurred.\n{e}')
+    elif mode == 'DOCX/TXT':
+        try:
+            save_loc = filedialog.askdirectory(title='Select location to save to',
+                                               initialdir='/')
+            docx_steg.t2t_encoding_steganoFunction(cover_file, payload_file, save_loc)
+            messagebox.showinfo('Success', f'Your payload has been encoded!')
+        except Exception as e:
+            messagebox.showerror('Error', f'An error has occurred.\n{e}')
 
 
 def begin_decode(mode_selected: StringVar, encoded_file: StringVar,
-                 bits_used: IntVar, size_file: IntVar, file_ext: StringVar):
+                 bits_used: IntVar, size_file: IntVar):
     mode_selected = mode_selected.get()
     encoded_file = encoded_file.get()
     bits_used = bits_used.get()
     size_file = size_file.get()
-    file_ext = file_ext.get()
     if mode_selected == 'MP3':
         try:
             save_as = filedialog.asksaveasfilename(title='Enter name of file to save as',
                                                    initialdir='/')
-            status = mp3_steg.get_secret_from_file(encoded_file, size_file, bits_used, save_as + file_ext)
+            status = mp3_steg.get_secret_from_file(encoded_file, size_file, bits_used, save_as)
             messagebox.showinfo('Success', f'{status}')
         except Exception as e:
             messagebox.showerror('Error', f'An error has occurred.\n{e}')
@@ -121,7 +129,7 @@ def begin_decode(mode_selected: StringVar, encoded_file: StringVar,
         try:
             save_as = filedialog.asksaveasfilename(title='Enter name of file to save as',
                                                    initialdir='/')
-            status = wav_steg.get_secret_from_file(encoded_file, size_file, bits_used, save_as + file_ext)
+            status = wav_steg.get_secret_from_file(encoded_file, size_file, bits_used, save_as)
             messagebox.showinfo('Success', f'{status}')
         except Exception as e:
             messagebox.showerror('Error', f'An error has occurred.\n{e}')
@@ -136,6 +144,14 @@ def begin_decode(mode_selected: StringVar, encoded_file: StringVar,
     elif mode_selected == 'HTML':
         try:
             msg = stegohtml.decode(encoded_file)
+            messagebox.showinfo('Decoded message', f'{msg}')
+        except Exception as e:
+            messagebox.showerror('Error', f'An error has occurred.\n{e}')
+    elif mode_selected == 'DOCX/TXT':
+        try:
+            save_loc = filedialog.askdirectory(title='Select location to decode to',
+                                               initialdir='/')
+            msg = docx_steg.t2t_decoding_steganoFunction(encoded_file, save_loc)
             messagebox.showinfo('Decoded message', f'{msg}')
         except Exception as e:
             messagebox.showerror('Error', f'An error has occurred.\n{e}')
@@ -165,7 +181,6 @@ mode_selected_decode_stringvar = StringVar(decodeTab)
 encoded_file_stringvar = StringVar(decodeTab)
 num_bits_decode_intvar = IntVar(decodeTab)
 size_of_file_intvar = IntVar(decodeTab)
-file_extension_stringvar = StringVar(decodeTab)
 
 # Frame creation
 frame = ttk.Frame(root, padding=10)
@@ -185,11 +200,18 @@ encoded_file_selection_label = Label(decodeTab, text='Selected file to decode')
 encoded_selected_file_label = Label(decodeTab, textvariable=encoded_file_stringvar)
 num_bits_used_label = Label(decodeTab, text='Number of bits used:')
 size_of_file_label = Label(decodeTab, text='Size of file:')
-file_extension_label = Label(decodeTab, text='File extension:')
 
 # Dropdowns
-mode_selection_dropdown_encode = OptionMenu(encodeTab, mode_selected_encode_stringvar, 'PNG', 'MP3', 'WAV', 'HTML')
-mode_selection_dropdown_decode = OptionMenu(decodeTab, mode_selected_decode_stringvar, 'PNG', 'MP3', 'WAV', 'HTML')
+mode_selection_dropdown_encode = OptionMenu(encodeTab, mode_selected_encode_stringvar, 'PNG',
+                                            'MP3',
+                                            'WAV',
+                                            'HTML',
+                                            'DOCX/TXT')
+mode_selection_dropdown_decode = OptionMenu(decodeTab, mode_selected_decode_stringvar, 'PNG',
+                                            'MP3',
+                                            'WAV',
+                                            'HTML',
+                                            'DOCX/TXT')
 
 # Encode Buttons
 select_cover_file_button = Button(encodeTab, text='Choose cover file:',
@@ -212,16 +234,14 @@ try_decode_function_button = Button(decodeTab, text='Begin!',
                                     command=lambda: begin_decode(mode_selected_decode_stringvar,
                                                                  encoded_file_stringvar,
                                                                  num_bits_decode_intvar,
-                                                                 size_of_file_intvar,
-                                                                 file_extension_stringvar))
+                                                                 size_of_file_intvar))
 
 # Spinbox
-num_bits_selection = Spinbox(encodeTab, from_=1, to=8, textvariable=num_bits_encode)
+num_bits_selection_encode = Spinbox(encodeTab, from_=1, to=8, textvariable=num_bits_encode)
+num_bits_selection_decode = Spinbox(decodeTab, from_=1, to=8, textvariable=num_bits_decode_intvar)
 
 # Entry box
-num_bits_used_entry = ttk.Entry(decodeTab, textvariable=num_bits_decode_intvar)
 size_of_file_entry = ttk.Entry(decodeTab, textvariable=size_of_file_intvar)
-file_extension_entry = ttk.Entry(decodeTab, textvariable=file_extension_stringvar)
 
 # Grid alignment
 tabControl.grid(row=0, column=0, sticky=W, pady=2, padx=2)
@@ -236,7 +256,7 @@ select_payload_file_button.grid(row=1, column=2, sticky=E, pady=2, padx=2)
 mode_selection_encode_label.grid(row=2, column=0, sticky=W, pady=2, padx=2)
 mode_selection_dropdown_encode.grid(row=2, column=2, sticky=E, pady=2, padx=2)
 num_bits_label.grid(row=3, column=0, sticky=E, pady=2, padx=2)
-num_bits_selection.grid(row=3, column=2, sticky=E, pady=2, padx=2)
+num_bits_selection_encode.grid(row=3, column=2, sticky=E, pady=2, padx=2)
 try_encode_function_button.grid(row=4, column=2, sticky=E, pady=2, padx=2)
 get_num_bits_button.grid(row=5, column=2, sticky=E, pady=2, padx=2)
 
@@ -247,12 +267,10 @@ encoded_file_selection_label.grid(row=1, column=0, sticky=W, pady=2, padx=2)
 encoded_selected_file_label.grid(row=1, column=1, sticky=W, pady=2, padx=2)
 select_encoded_file_button.grid(row=1, column=2, sticky=E, pady=2, padx=2)
 num_bits_used_label.grid(row=2, column=0, sticky=W, pady=2, padx=2)
-num_bits_used_entry.grid(row=2, column=2, sticky=E, pady=2, padx=2)
+num_bits_selection_decode.grid(row=2, column=2, sticky=E, pady=2, padx=2)
 size_of_file_label.grid(row=3, column=0, sticky=W, pady=2, padx=2)
 size_of_file_entry.grid(row=3, column=2, sticky=E, pady=2, padx=2)
-file_extension_label.grid(row=4, column=0, sticky=W, pady=2, padx=2)
-file_extension_entry.grid(row=4, column=2, sticky=E, pady=2, padx=2)
-try_decode_function_button.grid(row=5, column=2, sticky=E, pady=2, padx=2)
+try_decode_function_button.grid(row=4, column=2, sticky=E, pady=2, padx=2)
 
 # Main loop
 root.mainloop()

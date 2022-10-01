@@ -11,6 +11,8 @@ HTML - Nicole
 
 MP3 - Kah Jun
 
-WAV- Mathan & Kah Jun
+WAV - Mathan & Kah Jun
+
+DOCX/Plaintext - Aaron
 
 More to come in soon™
